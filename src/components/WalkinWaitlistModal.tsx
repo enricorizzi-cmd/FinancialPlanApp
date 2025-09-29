@@ -127,3 +127,4 @@ const WalkinWaitlistModal: React.FC<WalkinWaitlistModalProps> = ({ onClose }) =>
 };
 
 export default WalkinWaitlistModal;
+
