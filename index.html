@@ -1,13 +1,90 @@
-<!doctype html>
-<html lang="it">
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Financial Plan App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Gestione del piano finanziario multiazienda" />
+    <meta name="theme-color" content="#00e5ff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="FinancialPlan" />
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              primary: {
+                DEFAULT: '#00e5ff',
+                '50': '#e6fffe',
+                '100': '#b3fffc',
+                '200': '#80fff9',
+                '300': '#4dfff6',
+                '400': '#1afff3',
+                '500': '#00e5ff',
+                '600': '#00b8cc',
+                '700': '#008a99',
+                '800': '#005c66',
+                '900': '#002e33',
+              },
+              secondary: '#7c3aed',
+              accent: '#ec4899',
+              success: '#22c55e',
+              warning: '#f59e0b',
+              danger: '#ef4444',
+              dark: {
+                DEFAULT: '#0b0f19',
+                '50': '#1a1f2e',
+                '100': '#2a3143',
+                '200': '#3a4358',
+                '300': '#4a556d',
+                '400': '#5a6782',
+                '500': '#6a7997',
+                '600': '#7a8bac',
+                '700': '#8a9dc1',
+                '800': '#9aafd6',
+                '900': '#aac1eb',
+              }
+            },
+          },
+        },
+      };
+    </script>
   </head>
-  <body>
+  <body class="bg-dark text-white antialiased">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="/src/index.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

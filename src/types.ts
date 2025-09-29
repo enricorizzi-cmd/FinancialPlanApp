@@ -1,50 +1,152 @@
+export enum ReservationStatus {
+  Confirmed = 'Confermata',
+  Seated = 'Accomodato',
+  Completed = 'Completata',
+  NoShow = 'Assente',
+  Cancelled = 'Cancellata',
+}
+
+export enum TableStatus {
+    Available = 'Disponibile',
+    Occupied = 'Occupato',
+    Reserved = 'Riservato',
+    Cleaning = 'Da Pulire',
+}
+
 // Financial Plan Types
-export type TabKey = 'overview' | 'plan' | 'causali' | 'business-plan' | 'stats';
+export type TabKey = 'plan' | 'stats' | 'causali';
 
 export interface PlanOverrides {
-  [macro: string]: {
-    [category: string]: {
-      [detail: string]: {
-        [monthKey: string]: number;
-      };
-    };
-  };
+  [key: string]: number;
 }
 
 export interface StatsOverrides {
-  [monthKey: string]: {
-    fatturatoPrevisionale?: number | null;
-    incassatoPrevisionale?: number | null;
-    utilePrevisionale?: number | null;
-  };
+  [key: string]: number;
 }
 
-// Company Management Types
-export interface Company {
+export interface Reservation {
+  id: string;
+  locationId: string;
+  guestName: string;
+  partySize: number;
+  reservationTime: string;
+  status: ReservationStatus;
+  notes?: string;
+  phone: string;
+  email: string;
+  tableId?: string | null;
+}
+
+export interface WaitlistEntry {
+  id: string;
+  locationId: string;
+  guestName: string;
+  partySize: number;
+  phone: string;
+  quotedWaitTime: number; // in minutes
+  createdAt: string; // ISO string
+}
+
+export interface RestaurantLocation {
   id: string;
   name: string;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
+  capacity: number;
+  openTime: string; // "HH:MM"
+  closeTime: string; // "HH:MM"
+  address?: string;
+}
+
+export interface Table {
+    id: string;
+    locationId: string;
+    name: string;
+    capacity: number;
+    status: TableStatus;
+    shape: 'square' | 'round';
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    reservationId?: string | null;
+}
+
+export interface Customer {
+    id: string; // Based on phone number
+    name: string;
+    phone: string;
+    email: string;
+    firstSeen: string;
+    lastSeen: string;
+    totalVisits: number;
+    totalSpent: number;
+    reservationHistory: Reservation[];
+}
+
+
+export interface KPIs {
+  totalReservations: number;
+  totalCovers: number;
+  occupancyRate: number;
+  noShowRate: number;
+  reservationsByTime: { time: string; reservations: number }[];
 }
 
 export type NotificationType = 'success' | 'info' | 'error';
 
 export interface AppNotification {
-  id: number;
-  message: string;
-  type: NotificationType;
+    id: number;
+    message: string;
+    type: NotificationType;
+}
+
+export interface MenuItem {
+  id: string;
+  name: string;
+  category: 'Antipasto' | 'Primo' | 'Secondo' | 'Dessert' | 'Bevanda';
+  price: number;
+  cost: number;
+}
+
+export interface OrderItem {
+  menuItemId: string;
+  quantity: number;
+  price: number; // Price at the time of order
+}
+
+export interface Sale {
+  id: string;
+  locationId: string;
+  reservationId: string;
+  items: OrderItem[];
+  total: number;
+  createdAt: string;
 }
 
 export interface AppContextType {
-  companies: Company[];
-  currentCompany: Company | null;
-  loading: boolean;
-  error: string | null;
-  notifications: AppNotification[];
-  showNotification: (message: string, type: NotificationType) => void;
-  setCurrentCompany: (companyId: string) => Promise<void>;
-  addCompany: (company: Omit<Company, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-  updateCompany: (companyId: string, company: Partial<Company>) => Promise<void>;
-  deleteCompany: (companyId: string) => Promise<void>;
+    locations: RestaurantLocation[];
+    currentLocation: RestaurantLocation | null;
+    reservations: Reservation[];
+    waitlist: WaitlistEntry[];
+    tables: Table[];
+    customers: Customer[];
+    kpis: KPIs;
+    menuItems: MenuItem[];
+    sales: Sale[];
+    loading: boolean;
+    error: string | null;
+    notifications: AppNotification[];
+    showNotification: (message: string, type: NotificationType) => void;
+    setCurrentLocation: (locationId: string) => Promise<void>;
+    addReservation: (reservation: Omit<Reservation, 'id' | 'locationId'>) => Promise<void>;
+    updateReservationStatus: (id: string, status: ReservationStatus) => Promise<void>;
+    updateLocationSettings: (locationId: string, newSettings: RestaurantLocation) => Promise<void>;
+    updateTableStatus: (tableId: string, status: TableStatus) => Promise<void>;
+    saveTableLayout: (tables: Table[]) => Promise<void>;
+    addWaitlistEntry: (entry: Omit<WaitlistEntry, 'id' | 'createdAt' | 'locationId'>) => Promise<void>;
+    removeWaitlistEntry: (id: string) => Promise<void>;
+    seatFromWaitlist: (id: string) => Promise<void>;
+    markWaitlistNoShow: (id: string) => Promise<void>;
+    assignReservationToTable: (reservationId: string, tableId: string) => Promise<void>;
+    seatWalkIn: (walkinData: Omit<Reservation, 'id' | 'locationId' | 'status'>, tableId: string) => Promise<void>;
+    clearTable: (tableId: string) => Promise<void>;
 }
